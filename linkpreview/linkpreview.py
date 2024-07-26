@@ -12,13 +12,16 @@ from linkpreview.helpers import LazyAttribute, titleize
 
 
 class LinkPreview:
-    def __init__(self, link: Link, parser: str = "html.parser"):
+    def __init__(self, link: Link, parser: str | None = "html.parser", soup: 'BeautifulSoup' | None = None):
+        if parser and soup:
+            raise Exception(
+                'Only one of `parser` or soup` argument must be provided to LinkPreview')
         self.link = link
-        self.generic = Generic(link, parser)
-        self.opengraph = OpenGraph(link, parser)
-        self.twitter = TwitterCard(link, parser)
-        self.microdata = Microdata(link, parser)
-        self.jsonld = JsonLd(link, parser)
+        self.generic = Generic(link, parser, soup)
+        self.opengraph = OpenGraph(link, parser, soup)
+        self.twitter = TwitterCard(link, parser, soup)
+        self.microdata = Microdata(link, parser, soup)
+        self.jsonld = JsonLd(link, parser, soup)
         self.sources = (
             self.opengraph,
             self.twitter,
@@ -90,7 +93,7 @@ class LinkPreview:
 
         link = self.link.copy()
         link.netloc = link.netloc.split("@")[-1]
-        return link.url[len(self.link.scheme) + 3 :]
+        return link.url[len(self.link.scheme) + 3:]
 
     @LazyAttribute
     def favicon(self):

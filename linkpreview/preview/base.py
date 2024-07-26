@@ -7,9 +7,12 @@ class PreviewBase(object):  # pragma: nocover
     Base for all web preview.
     """
 
-    def __init__(self, link: Link, parser: str):
+    def __init__(self, link: Link, parser: str, soup: 'BeautifulSoup'):
         self.link = link
-        self._soup = BeautifulSoup(self.link.content, parser)
+        if soup:
+            self._soup = soup
+        else:
+            self._soup = BeautifulSoup(self.link.content, parser)
 
     @property
     def title(self):
